@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Button, Select, Row, Col, Table, Progress, Input, Modal  } from 'antd';
+import { Form, Button, Select, Row, Col, Table, Progress, Input, Modal } from 'antd';
 import ls from 'local-storage';
 import { EditOutlined } from '@ant-design/icons';
 import { PlusOutlined } from '@ant-design/icons';
@@ -43,27 +43,32 @@ const EmployeeForm = ({ initalUserSkills, userSkill, updateSkills, Percentage, s
       title: 'Set Percentage',
       dataIndex: 'id',
       key: 'add',
-      render: (id) => (
-        <Button type="primary" 
-        onClick={() => addPercentage(id)}
-        > <PlusOutlined />Add</Button>
-      ),
+      render: (id) => {
+        if (Percentage) {
+          const percentageData = Percentage.find((item) => item.skill_id === id);
+          return <Button type="primary" onClick={() => addPercentage(id)} disabled={percentageData}> <PlusOutlined />Add</Button>
+        }
+        return <Button type="primary" onClick={() => addPercentage(id)}> <PlusOutlined />Add</Button>
+      },
     },
     {
       title: 'Percentage',
       dataIndex: 'id',
       render: (id) => {
-        const percentageData = Percentage.find(
-          (item) => item.skill_id === id
-        );
-        const percentValue = percentageData ? percentageData.percentage : 0;
-  
-        return <Progress percent={percentValue} size="small" />;
+        if (Percentage) {
+          const percentageData = Percentage.find((item) => item.skill_id === id);
+          return percentageData ? (
+            <Progress percent={percentageData.percentage} size="small" />
+          ) : (
+            <span style={{ color: 'red' }}>Not Added</span>
+          );
+        }
+        return <span style={{ color: "red" }}>Not Added</span>;
       },
     },
   ]
 
-  const addPercentage = (id) =>{
+  const addPercentage = (id) => {
     setskill_id(id);
     setIsModalOpen(true);
   }
@@ -71,7 +76,7 @@ const EmployeeForm = ({ initalUserSkills, userSkill, updateSkills, Percentage, s
   const handleOk = () => {
     setIsModalOpen(false);
     setPercentageValue(null)
-    const newPercentage = {user_id: userID, skill_id: skill_id, percentage: percentageValue}
+    const newPercentage = { user_id: userID, skill_id: skill_id, percentage: percentageValue }
     savePercentage(newPercentage);
   };
 
@@ -120,7 +125,7 @@ const EmployeeForm = ({ initalUserSkills, userSkill, updateSkills, Percentage, s
       />
       <Modal title="Set Percentage" open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
         <label>Enter Percentage of Skills</label>
-        <Input value={percentageValue} onChange={(e)=>setPercentageValue(e.target.value)}></Input>
+        <Input value={percentageValue} onChange={(e) => setPercentageValue(e.target.value)}></Input>
       </Modal>
     </div>
   );
