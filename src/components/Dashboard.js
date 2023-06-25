@@ -204,6 +204,7 @@ const Dashboard = () => {
             .then((data) => {
                 getuserSkills();
                 getusers();
+                getPercentage(userId);
             })
             .catch((error) => {
                 console.error('Error creating user:', error);
