@@ -14,6 +14,7 @@ const Dashboard = () => {
     const [userTypes, setuserTypes] = useState([]);
     const [userSkill, setUserSkill] = useState([]);
     const [initalUserSkills, setInitalUserSkills] = useState(null);
+    const [Percentage, setPercentage] = useState(null);
     const userName = ls.get('userName')
     const userId = ls.get('userId')
     const role = ls.get('role')
@@ -23,7 +24,8 @@ const Dashboard = () => {
         getusers();
         getuserType();
         getuserSkills();
-    }, []);
+        getPercentage(userId);
+    }, [userId]);
 
     const getusers = () => {
         fetch('http://localhost:5000/api/usersList', {
@@ -36,6 +38,23 @@ const Dashboard = () => {
             .then((response) => response.json())
             .then((data) => {
                 setUsers(data.data);
+            })
+            .catch((error) => {
+                console.error('Error creating user:', error);
+            });
+    };
+
+    const getPercentage = (userId) => {
+        fetch('http://localhost:5000/api/showPercentage', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({userId:userId}),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                setPercentage(data.results);
             })
             .catch((error) => {
                 console.error('Error creating user:', error);
@@ -173,6 +192,25 @@ const Dashboard = () => {
 
     }
 
+    const savePercentage = (newPercentage) => {
+        fetch('http://localhost:5000/api/savePercentage', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newPercentage),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                getuserSkills();
+                getusers();
+            })
+            .catch((error) => {
+                console.error('Error creating user:', error);
+            });
+
+    }
+
     const handleLogout = () => {
         ls.clear();
         history('/');
@@ -195,6 +233,8 @@ const Dashboard = () => {
                             initalUserSkills={initalUserSkills}
                             userSkill={userSkill}
                             updateSkills={updateSkills}
+                            Percentage={Percentage}
+                            savePercentage={savePercentage}
                         />
 
                     </TabPane>
